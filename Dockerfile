@@ -33,6 +33,17 @@ RUN echo '#!/usr/bin/env sh' > /data/run.sh && \
 # Set permissions
 RUN chmod +x /data/run.sh
 
+# Create default server.properties if it doesn't exist
+RUN echo 'server-name=Anomaly SV' > /data/server.properties && \
+    echo 'server-port=25565' >> /data/server.properties && \
+    echo 'max-players=20' >> /data/server.properties && \
+    echo 'difficulty=normal' >> /data/server.properties && \
+    echo 'gamemode=survival' >> /data/server.properties && \
+    echo 'motd=Welcome to Anomaly SV!' >> /data/server.properties && \
+    echo 'online-mode=true' >> /data/server.properties && \
+    echo 'white-list=false' >> /data/server.properties && \
+    echo 'eula=true' > /data/eula.txt
+
 # Expose port
 EXPOSE 25565
 
