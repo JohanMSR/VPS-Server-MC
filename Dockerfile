@@ -22,8 +22,13 @@ RUN rm forge-installer.jar
 # Create necessary directories
 RUN mkdir -p /data/mods /data/config /data/logs /data/world
 
-# Copy server files
-COPY server/ /data/
+# Create default server files
+RUN echo '#!/usr/bin/env sh' > /data/run.sh && \
+    echo '# Forge requires a configured set of both JVM and program arguments.' >> /data/run.sh && \
+    echo '# Add custom JVM arguments to the user_jvm_args.txt' >> /data/run.sh && \
+    echo '# Add custom program arguments {such as nogui} to this file in the next line before the "$@" or' >> /data/run.sh && \
+    echo '#  pass them to this script directly' >> /data/run.sh && \
+    echo 'java @user_jvm_args.txt @libraries/net/minecraftforge/forge/1.20.1-47.4.0/unix_args.txt "$@"' >> /data/run.sh
 
 # Set permissions
 RUN chmod +x /data/run.sh
