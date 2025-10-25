@@ -1,0 +1,45 @@
+version: '3.8'
+
+services:
+  minecraft:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    container_name: minecraft-forge-server
+    ports:
+      - "25565:25565"
+    volumes:
+      - ./server:/data
+      - ./server/world:/data/world
+      - ./server/logs:/data/logs
+      - ./server/mods:/data/mods
+      - ./server/config:/data/config
+    environment:
+      - EULA=true
+      - SERVER_NAME=Mimicer SV
+      - SERVER_PORT=25565
+      - MAX_PLAYERS=20
+      - DIFFICULTY=normal
+      - GAMEMODE=survival
+      - MOTD=Welcome to Mimicer SV!
+    restart: unless-stopped
+    stdin_open: true
+    tty: true
+
+  dashboard:
+    build:
+      context: ./dashboard
+      dockerfile: Dockerfile
+    container_name: minecraft-dashboard
+    ports:
+      - "6060:6060"
+    volumes:
+      - ./server:/data/server
+      - ./dashboard/config:/app/config
+    environment:
+      - NODE_ENV=production
+      - PORT=6060
+      - SERVER_PATH=/data/server
+    depends_on:
+      - minecraft
+    restart: unless-stopped
