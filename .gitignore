@@ -1,15 +1,15 @@
 # Minecraft Server Files
-server/
-world/
-logs/
-crash-reports/
-screenshots/
-usercache.json
-usernamecache.json
-banned-*.json
-ops.json
-whitelist.json
-server.properties
+server/world/
+server/logs/
+server/crash-reports/
+server/screenshots/
+server/usercache.json
+server/usernamecache.json
+server/banned-*.json
+server/ops.json
+server/whitelist.json
+server/server.properties
+server/eula.txt
 
 # Node.js
 node_modules/
