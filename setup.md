@@ -14,7 +14,7 @@ Before setting up the Minecraft server, ensure you have the following installed:
 ### 1. Clone and Navigate
 ```bash
 git clone <repository-url>
-cd mimicer-sv
+cd Anomaly-sv
 ```
 
 ### 2. Start the Server
@@ -50,7 +50,7 @@ The administrative dashboard includes:
 ### File Structure
 
 ```
-mimicer-sv/
+Anomaly-sv/
 ├── server/                 # Minecraft server files
 │   ├── mods/              # Forge mods
 │   ├── config/            # Server configuration

@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   minecraft:
     build: 
@@ -16,12 +14,12 @@ services:
       - ./server/config:/data/config
     environment:
       - EULA=true
-      - SERVER_NAME=Mimicer SV
+      - SERVER_NAME=Anomaly SV
       - SERVER_PORT=25565
       - MAX_PLAYERS=20
       - DIFFICULTY=normal
       - GAMEMODE=survival
-      - MOTD=Welcome to Mimicer SV!
+      - MOTD=Welcome to Anomaly SV!
     restart: unless-stopped
     stdin_open: true
     tty: true

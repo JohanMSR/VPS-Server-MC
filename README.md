@@ -15,7 +15,7 @@ A complete Minecraft 1.20.1 Forge server setup with Docker, Git, and an administ
 1. Clone the repository:
 ```bash
 git clone <repository-url>
-cd mimicer-sv
+cd Anomaly-sv
 ```
 
 2. Start the server:

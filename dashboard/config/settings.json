@@ -1,11 +1,11 @@
 {
   "server": {
-    "name": "Mimicer SV",
+    "name": "Anomaly SV",
     "version": "1.20.1",
     "forge_version": "47.4.0",
     "port": 25565,
     "max_players": 20,
-    "motd": "Welcome to Mimicer SV!"
+    "motd": "Welcome to Anomaly SV!"
   },
   "dashboard": {
     "port": 6060,
