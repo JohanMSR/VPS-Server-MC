@@ -5,6 +5,8 @@ const cors = require('cors');
 const fs = require('fs-extra');
 const path = require('path');
 const { spawn } = require('child_process');
+const { status } = require('minecraft-server-util');
+const si = require('systeminformation');
 
 const app = express();
 const server = http.createServer(app);
@@ -17,6 +19,8 @@ const io = socketIo(server, {
 
 const PORT = process.env.PORT || 6060;
 const SERVER_PATH = process.env.SERVER_PATH || '/data/server';
+const MINECRAFT_HOST = process.env.MINECRAFT_HOST || 'localhost';
+const MINECRAFT_PORT = process.env.MINECRAFT_PORT || 25565;
 
 // Middleware
 app.use(cors());
@@ -27,9 +31,13 @@ app.use(express.static('public'));
 let serverStatus = {
   running: false,
   players: [],
+  maxPlayers: 20,
   uptime: 0,
   tps: 20,
-  memory: { used: 0, max: 0 }
+  memory: { used: 0, max: 0 },
+  version: '',
+  motd: '',
+  lastUpdate: new Date()
 };
 
 // Routes
@@ -63,6 +71,23 @@ app.get('/api/players', (req, res) => {
   res.json({ players: serverStatus.players });
 });
 
+app.get('/api/system', async (req, res) => {
+  try {
+    const systemInfo = await getSystemInfo();
+    res.json(systemInfo);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to get system info' });
+  }
+});
+
+app.get('/api/health', (req, res) => {
+  res.json({ 
+    status: 'healthy', 
+    timestamp: new Date().toISOString(),
+    server: serverStatus.running ? 'online' : 'offline'
+  });
+});
+
 // Socket.IO for real-time communication
 io.on('connection', (socket) => {
   console.log('Dashboard client connected');
@@ -74,13 +99,67 @@ io.on('connection', (socket) => {
   });
 });
 
-// Simulate server monitoring (in real implementation, this would connect to actual server)
-setInterval(() => {
-  // Simulate server metrics
-  serverStatus.uptime += 1;
-  serverStatus.tps = 15 + Math.random() * 10;
-  serverStatus.memory.used = Math.floor(Math.random() * 2048);
-  serverStatus.memory.max = 4096;
+// Real server monitoring functions
+async function checkMinecraftServer() {
+  try {
+    const response = await status(MINECRAFT_HOST, MINECRAFT_PORT, {
+      timeout: 5000,
+      enableSRV: true
+    });
+    
+    serverStatus.running = true;
+    serverStatus.players = response.players.sample || [];
+    serverStatus.maxPlayers = response.players.max;
+    serverStatus.version = response.version.name;
+    serverStatus.motd = response.motd.clean;
+    serverStatus.uptime += 5; // Increment by 5 seconds
+    serverStatus.lastUpdate = new Date();
+    
+    // Get system memory info
+    const memInfo = await si.mem();
+    serverStatus.memory.used = Math.round(memInfo.used / 1024 / 1024); // Convert to MB
+    serverStatus.memory.max = Math.round(memInfo.total / 1024 / 1024); // Convert to MB
+    
+    // Estimate TPS based on server performance (simplified)
+    serverStatus.tps = Math.min(20, Math.max(10, 20 - (serverStatus.memory.used / serverStatus.memory.max) * 10));
+    
+  } catch (error) {
+    console.log('Minecraft server not reachable:', error.message);
+    serverStatus.running = false;
+    serverStatus.players = [];
+    serverStatus.lastUpdate = new Date();
+  }
+}
+
+async function getSystemInfo() {
+  try {
+    const memInfo = await si.mem();
+    const cpuInfo = await si.currentLoad();
+    
+    return {
+      memory: {
+        used: Math.round(memInfo.used / 1024 / 1024),
+        total: Math.round(memInfo.total / 1024 / 1024),
+        percentage: Math.round((memInfo.used / memInfo.total) * 100)
+      },
+      cpu: {
+        usage: Math.round(cpuInfo.currentLoad)
+      }
+    };
+  } catch (error) {
+    console.error('Failed to get system info:', error);
+    return null;
+  }
+}
+
+// Real server monitoring
+setInterval(async () => {
+  await checkMinecraftServer();
+  const systemInfo = await getSystemInfo();
+  
+  if (systemInfo) {
+    serverStatus.memory = systemInfo.memory;
+  }
   
   io.emit('server-status', serverStatus);
 }, 5000);

@@ -4,122 +4,21 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Minecraft Server Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <link rel="stylesheet" href="styles.css">
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script crossorigin src="https://unpkg.com/@mui/material@5.14.0/umd/material-ui.development.js"></script>
+    <script crossorigin src="https://unpkg.com/@mui/icons-material@5.14.0/umd/material-ui-icons.development.js"></script>
+    <script crossorigin src="https://unpkg.com/@emotion/react@11.11.0/dist/emotion-react.umd.min.js"></script>
+    <script crossorigin src="https://unpkg.com/@emotion/styled@11.11.0/dist/emotion-styled.umd.min.js"></script>
+    <script src="https://unpkg.com/socket.io-client@4.7.2/dist/socket.io.js"></script>
+    <script src="https://unpkg.com/recharts@2.8.0/umd/Recharts.js"></script>
 </head>
 <body>
-    <div id="app">
-        <!-- Header -->
-        <header class="header">
-            <div class="header-content">
-                <div class="header-left">
-                    <i class="material-icons">dns</i>
-                    <h1>Minecraft Server Dashboard</h1>
-                </div>
-                <div class="header-right">
-                    <div class="status-indicator" id="statusIndicator">
-                        <span class="status-dot"></span>
-                        <span id="statusText">Offline</span>
-                    </div>
-                </div>
-            </div>
-        </header>
-
-        <!-- Main Content -->
-        <main class="main-content">
-            <!-- Server Status Cards -->
-            <div class="cards-grid">
-                <div class="card">
-                    <div class="card-header">
-                        <i class="material-icons">info</i>
-                        <h3>Server Status</h3>
-                    </div>
-                    <div class="card-content">
-                        <div class="status-item">
-                            <span class="label">Status:</span>
-                            <span class="value" id="serverStatus">Offline</span>
-                        </div>
-                        <div class="status-item">
-                            <span class="label">Players:</span>
-                            <span class="value" id="playerCount">0/20</span>
-                        </div>
-                        <div class="status-item">
-                            <span class="label">Uptime:</span>
-                            <span class="value" id="uptime">0s</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="card">
-                    <div class="card-header">
-                        <i class="material-icons">memory</i>
-                        <h3>Performance</h3>
-                    </div>
-                    <div class="card-content">
-                        <div class="status-item">
-                            <span class="label">TPS:</span>
-                            <span class="value" id="tps">20</span>
-                        </div>
-                        <div class="status-item">
-                            <span class="label">Memory:</span>
-                            <span class="value" id="memory">0/4096 MB</span>
-                        </div>
-                        <div class="progress-bar">
-                            <div class="progress-fill" id="memoryProgress"></div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="card">
-                    <div class="card-header">
-                        <i class="material-icons">group</i>
-                        <h3>Online Players</h3>
-                    </div>
-                    <div class="card-content">
-                        <div id="playersList" class="players-list">
-                            <p class="no-players">No players online</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Command Console -->
-            <div class="card console-card">
-                <div class="card-header">
-                    <i class="material-icons">terminal</i>
-                    <h3>Server Console</h3>
-                </div>
-                <div class="card-content">
-                    <div class="console-container">
-                        <div id="consoleOutput" class="console-output"></div>
-                        <div class="console-input-container">
-                            <input type="text" id="consoleInput" placeholder="Enter server command..." />
-                            <button id="sendCommand" class="btn btn-primary">
-                                <i class="material-icons">send</i>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Server Logs -->
-            <div class="card logs-card">
-                <div class="card-header">
-                    <i class="material-icons">description</i>
-                    <h3>Server Logs</h3>
-                    <button id="refreshLogs" class="btn btn-secondary">
-                        <i class="material-icons">refresh</i>
-                    </button>
-                </div>
-                <div class="card-content">
-                    <div id="logsOutput" class="logs-output"></div>
-                </div>
-            </div>
-        </main>
-    </div>
-
-    <script src="/socket.io/socket.io.js"></script>
-    <script src="app.js"></script>
+    <div id="root"></div>
+    <script src="dashboard.js"></script>
 </body>
 </html>
