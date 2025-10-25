@@ -19,8 +19,8 @@ const io = socketIo(server, {
 
 const PORT = process.env.PORT || 6060;
 const SERVER_PATH = process.env.SERVER_PATH || '/data/server';
-const MINECRAFT_HOST = process.env.MINECRAFT_HOST || 'localhost';
-const MINECRAFT_PORT = process.env.MINECRAFT_PORT || 25565;
+const MINECRAFT_HOST = process.env.MINECRAFT_HOST || '127.0.0.1';
+const MINECRAFT_PORT = parseInt(process.env.MINECRAFT_PORT) || 25565;
 
 // Middleware
 app.use(cors());
@@ -104,7 +104,8 @@ async function checkMinecraftServer() {
   try {
     const response = await status(MINECRAFT_HOST, MINECRAFT_PORT, {
       timeout: 5000,
-      enableSRV: true
+      enableSRV: false, // Disable SRV lookup to avoid DNS issues
+      protocolVersion: 47 // Use a common protocol version
     });
     
     serverStatus.running = true;
@@ -123,11 +124,30 @@ async function checkMinecraftServer() {
     // Estimate TPS based on server performance (simplified)
     serverStatus.tps = Math.min(20, Math.max(10, 20 - (serverStatus.memory.used / serverStatus.memory.max) * 10));
     
+    console.log(`✅ Minecraft server online: ${serverStatus.players.length}/${serverStatus.maxPlayers} players`);
+    
   } catch (error) {
-    console.log('Minecraft server not reachable:', error.message);
+    // Only log error once per minute to avoid spam
+    const now = new Date();
+    if (!serverStatus.lastErrorTime || (now - serverStatus.lastErrorTime) > 60000) {
+      console.log('⚠️  Minecraft server not reachable. Dashboard will show offline status.');
+      console.log(`   Make sure your Minecraft server is running on ${MINECRAFT_HOST}:${MINECRAFT_PORT}`);
+      console.log('   Or set MINECRAFT_HOST and MINECRAFT_PORT environment variables');
+      serverStatus.lastErrorTime = now;
+    }
+    
     serverStatus.running = false;
     serverStatus.players = [];
     serverStatus.lastUpdate = new Date();
+    
+    // Still get system info even when server is offline
+    try {
+      const memInfo = await si.mem();
+      serverStatus.memory.used = Math.round(memInfo.used / 1024 / 1024);
+      serverStatus.memory.max = Math.round(memInfo.total / 1024 / 1024);
+    } catch (memError) {
+      console.error('Failed to get system memory info:', memError.message);
+    }
   }
 }
 
@@ -166,6 +186,12 @@ setInterval(async () => {
 
 // Start server
 server.listen(PORT, () => {
-  console.log(`Minecraft Dashboard running on port ${PORT}`);
-  console.log(`Server path: ${SERVER_PATH}`);
+  console.log(`🚀 Minecraft Dashboard running on port ${PORT}`);
+  console.log(`📁 Server path: ${SERVER_PATH}`);
+  console.log(`🎮 Monitoring Minecraft server at ${MINECRAFT_HOST}:${MINECRAFT_PORT}`);
+  console.log(`🌐 Dashboard available at: http://localhost:${PORT}`);
+  console.log('');
+  
+  // Initial server check
+  checkMinecraftServer();
 });
