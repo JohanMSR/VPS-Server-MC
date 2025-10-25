@@ -38,6 +38,8 @@ services:
       - NODE_ENV=production
       - PORT=6060
       - SERVER_PATH=/data/server
+      - MINECRAFT_HOST=minecraft
+      - MINECRAFT_PORT=25565
     depends_on:
       - minecraft
     restart: unless-stopped

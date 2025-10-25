@@ -19,7 +19,7 @@ const io = socketIo(server, {
 
 const PORT = process.env.PORT || 6060;
 const SERVER_PATH = process.env.SERVER_PATH || '/data/server';
-const MINECRAFT_HOST = process.env.MINECRAFT_HOST || '127.0.0.1';
+const MINECRAFT_HOST = process.env.MINECRAFT_HOST || 'minecraft';
 const MINECRAFT_PORT = parseInt(process.env.MINECRAFT_PORT) || 25565;
 
 // Middleware
@@ -131,8 +131,9 @@ async function checkMinecraftServer() {
     const now = new Date();
     if (!serverStatus.lastErrorTime || (now - serverStatus.lastErrorTime) > 60000) {
       console.log('⚠️  Minecraft server not reachable. Dashboard will show offline status.');
-      console.log(`   Make sure your Minecraft server is running on ${MINECRAFT_HOST}:${MINECRAFT_PORT}`);
-      console.log('   Or set MINECRAFT_HOST and MINECRAFT_PORT environment variables');
+      console.log(`   Trying to connect to: ${MINECRAFT_HOST}:${MINECRAFT_PORT}`);
+      console.log('   In Docker: Use service name (e.g., "minecraft") not "localhost"');
+      console.log('   Set MINECRAFT_HOST and MINECRAFT_PORT environment variables if needed');
       serverStatus.lastErrorTime = now;
     }
     
