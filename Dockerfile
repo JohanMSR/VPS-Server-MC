@@ -23,7 +23,7 @@ RUN rm forge-installer.jar
 RUN mkdir -p /data/mods /data/config /data/logs /data/world
 
 # Copy server files if they exist
-COPY server/ /data/ 2>/dev/null || echo "No server directory found, using defaults"
+COPY server/ /data/
 
 # Create default run.sh if it doesn't exist
 RUN if [ ! -f /data/run.sh ]; then \
