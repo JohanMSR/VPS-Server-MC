@@ -52,7 +52,9 @@ RUN if [ ! -f /data/server.properties ]; then \
 
 # Create EULA if it doesn't exist
 RUN if [ ! -f /data/eula.txt ]; then \
-        echo 'eula=true' > /data/eula.txt; \
+        echo '#By changing the setting below to TRUE you are indicating your agreement to our EULA (https://aka.ms/MinecraftEULA).' > /data/eula.txt && \
+        echo '#Tue Jan 01 00:00:00 UTC 2024' >> /data/eula.txt && \
+        echo 'eula=true' >> /data/eula.txt; \
     fi
 
 # Expose port
