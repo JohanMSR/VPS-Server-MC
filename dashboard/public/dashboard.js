@@ -29,17 +29,16 @@ const {
   Tooltip
 } = MaterialUI;
 
-const {
-  Dns,
-  Memory,
-  Group,
-  Terminal,
-  Refresh,
-  Send,
-  CheckCircle,
-  Error,
-  Warning
-} = MaterialUIIcons;
+// Simple icon components since Material-UI icons are not available
+const Dns = () => React.createElement('span', { style: { fontSize: '24px' } }, '🌐');
+const Memory = () => React.createElement('span', { style: { fontSize: '24px' } }, '💾');
+const Group = () => React.createElement('span', { style: { fontSize: '24px' } }, '👥');
+const Terminal = () => React.createElement('span', { style: { fontSize: '24px' } }, '💻');
+const Refresh = () => React.createElement('span', { style: { fontSize: '24px' } }, '🔄');
+const Send = () => React.createElement('span', { style: { fontSize: '24px' } }, '📤');
+const CheckCircle = () => React.createElement('span', { style: { fontSize: '24px' } }, '✅');
+const Error = () => React.createElement('span', { style: { fontSize: '24px' } }, '❌');
+const Warning = () => React.createElement('span', { style: { fontSize: '24px' } }, '⚠️');
 
 // Create Material UI theme
 const theme = createTheme({

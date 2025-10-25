@@ -22,6 +22,8 @@ const SERVER_PATH = process.env.SERVER_PATH || '/data/server';
 const MINECRAFT_HOST = process.env.MINECRAFT_HOST || 'minecraft';
 const MINECRAFT_PORT = parseInt(process.env.MINECRAFT_PORT) || 25565;
 
+console.log(`🎮 Connecting to Minecraft server at: ${MINECRAFT_HOST}:${MINECRAFT_PORT}`);
+
 // Middleware
 app.use(cors());
 app.use(express.json());
@@ -102,6 +104,7 @@ io.on('connection', (socket) => {
 // Real server monitoring functions
 async function checkMinecraftServer() {
   try {
+    console.log(`🔍 Attempting to connect to ${MINECRAFT_HOST}:${MINECRAFT_PORT}...`);
     const response = await status(MINECRAFT_HOST, MINECRAFT_PORT, {
       timeout: 5000,
       enableSRV: false, // Disable SRV lookup to avoid DNS issues
@@ -185,13 +188,45 @@ setInterval(async () => {
   io.emit('server-status', serverStatus);
 }, 5000);
 
+// Test network connectivity
+async function testConnectivity() {
+  const net = require('net');
+  return new Promise((resolve) => {
+    const socket = new net.Socket();
+    const timeout = 3000;
+    
+    socket.setTimeout(timeout);
+    socket.on('connect', () => {
+      console.log(`✅ Network connectivity to ${MINECRAFT_HOST}:${MINECRAFT_PORT} is working`);
+      socket.destroy();
+      resolve(true);
+    });
+    
+    socket.on('timeout', () => {
+      console.log(`❌ Network timeout connecting to ${MINECRAFT_HOST}:${MINECRAFT_PORT}`);
+      socket.destroy();
+      resolve(false);
+    });
+    
+    socket.on('error', (err) => {
+      console.log(`❌ Network error connecting to ${MINECRAFT_HOST}:${MINECRAFT_PORT}: ${err.message}`);
+      resolve(false);
+    });
+    
+    socket.connect(MINECRAFT_PORT, MINECRAFT_HOST);
+  });
+}
+
 // Start server
-server.listen(PORT, () => {
+server.listen(PORT, async () => {
   console.log(`🚀 Minecraft Dashboard running on port ${PORT}`);
   console.log(`📁 Server path: ${SERVER_PATH}`);
   console.log(`🎮 Monitoring Minecraft server at ${MINECRAFT_HOST}:${MINECRAFT_PORT}`);
   console.log(`🌐 Dashboard available at: http://localhost:${PORT}`);
   console.log('');
+  
+  // Test network connectivity first
+  await testConnectivity();
   
   // Initial server check
   checkMinecraftServer();
